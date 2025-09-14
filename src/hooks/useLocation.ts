@@ -100,7 +100,7 @@ export function useLocation(): UseLocationResult {
   // Auto-request location on mount
   useEffect(() => {
     requestLocation();
-  }, []);
+  }, [requestLocation]);
 
   const setManualLocation = async (lat: number, lng: number) => {
     setLoading(true);

@@ -163,7 +163,7 @@ export default function SettingsPanel({ isOpen, onClose, onLocationInput }: Sett
                   Manual Location Input
                 </label>
                 <p className="text-sm text-apple-gray-600 dark:text-apple-gray-400 mb-4">
-                  Enter coordinates if automatic location detection isn't working.
+                  Enter coordinates if automatic location detection isn&apos;t working.
                 </p>
                 
                 <div className="grid grid-cols-2 gap-4 mb-4">

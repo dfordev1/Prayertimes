@@ -84,7 +84,7 @@ export function useNotifications(prayerTimes: PrayerTimes | null, settings: Pray
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
     };
-  }, [prayerTimes, settings.notificationsEnabled, settings.reminderMinutes]);
+  }, [prayerTimes, settings.notificationsEnabled, settings.reminderMinutes, scheduleNotifications]);
 
   return {
     requestNotificationPermission,

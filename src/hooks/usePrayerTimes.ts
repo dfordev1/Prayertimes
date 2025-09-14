@@ -108,7 +108,7 @@ export function usePrayerTimes(location: Location | null, settings: PrayerSettin
 
   useEffect(() => {
     fetchPrayerTimes();
-  }, [location, settings.calculationMethod, settings.adjustments]);
+  }, [location, settings.calculationMethod, settings.adjustments, fetchPrayerTimes]);
 
   return {
     prayerTimes,
