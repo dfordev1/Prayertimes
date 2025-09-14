@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
+import { formatTime } from '@/utils/timeUtils';
 
 interface PrayerTimes {
   fajr: string;
@@ -26,15 +28,8 @@ function getCurrentMinutes(): number {
   return now.getHours() * 60 + now.getMinutes();
 }
 
-function formatTime(time: string): string {
-  const [hours, minutes] = time.split(':');
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${displayHour}:${minutes} ${ampm}`;
-}
-
 export default function PrayerTimesList({ prayerTimes, location }: PrayerTimesListProps) {
+  const { settings } = useSettings();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [nextPrayer, setNextPrayer] = useState<string | null>(null);
   const [timeToNext, setTimeToNext] = useState<string>('');
@@ -131,7 +126,7 @@ export default function PrayerTimesList({ prayerTimes, location }: PrayerTimesLi
             </div>
             <div className="text-right">
               <div className="font-sf text-sm font-medium text-apple-gray-900 dark:text-white">
-                {formatTime(prayer.time)}
+                {formatTime(prayer.time, settings.timeFormat === '24h')}
               </div>
             </div>
           </div>

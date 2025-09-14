@@ -171,16 +171,17 @@ export default function PrayerTimesDial({ prayerTimes }: PrayerTimesDialProps) {
           
           // Calculate proper arc path handling wrap-around
           let arcPath;
-          if (period.start > endAngle && period.name === 'Isha') {
+          if (period.name === 'Isha' && period.start > endAngle) {
             // Isha period crosses midnight - draw two arcs
             const midnightArc = createArcPath(centerX, centerY, radius, period.start, 360);
             const morningArc = createArcPath(centerX, centerY, radius, 0, endAngle);
-            arcPath = midnightArc; // Just use the main arc for now
+            // For display purposes, we'll use the main arc and handle the cross-midnight visualization differently
+            arcPath = createArcPath(centerX, centerY, radius, period.start, 360);
           } else {
-            arcPath = createArcPath(centerX, centerY, radius, period.start, period.end > 360 ? period.end : endAngle);
+            arcPath = createArcPath(centerX, centerY, radius, period.start, endAngle);
           }
           
-          const midAngle = period.end > 360 ? (period.start + period.end) / 2 : (period.start + endAngle) / 2;
+          const midAngle = (period.start + (endAngle > period.start ? endAngle : endAngle + 360)) / 2;
           const labelRadius = radius * 0.7;
           const labelPos = polarToCartesian(centerX, centerY, labelRadius, midAngle);
           

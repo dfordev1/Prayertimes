@@ -106,7 +106,7 @@ export default function SettingsPanel({ isOpen, onClose, onLocationInput }: Sett
                   {[{ value: '12h', label: '12 Hour' }, { value: '24h', label: '24 Hour' }].map(format => (
                     <button
                       key={format.value}
-                      onClick={() => updateSettings({ timeFormat: format.value as any })}
+                      onClick={() => updateSettings({ timeFormat: format.value as '12h' | '24h' })}
                       className={`flex-1 p-3 rounded-lg font-sf font-medium transition-colors ${
                         settings.timeFormat === format.value
                           ? 'bg-apple-blue text-white'
