@@ -5,11 +5,17 @@ import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { useSettings } from '@/contexts/SettingsContext';
 import PrayerTimesDial from '@/components/PrayerTimesDial';
 import PrayerTimesList from '@/components/PrayerTimesList';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const { location, loading: locationLoading, error: locationError, requestLocation } = useLocation();
   const { settings } = useSettings();
   const { prayerTimes, loading: prayerLoading, error: prayerError, refetch } = usePrayerTimes(location, settings);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getLocationDisplay = () => {
     if (!location) return 'Unknown location';
@@ -18,6 +24,27 @@ export default function Home() {
     }
     return `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`;
   };
+
+  // Prevent rendering on server to avoid hydration mismatches
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-apple-gray-50 dark:bg-black">
+        <main className="container mx-auto px-6 py-12">
+          <div className="text-center mb-12">
+            <h1 className="font-sf text-2xl font-medium text-apple-gray-900 dark:text-white mb-2">
+              Prayer Times
+            </h1>
+          </div>
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-3 text-apple-gray-600 dark:text-apple-gray-400">
+              <div className="w-5 h-5 border-2 border-apple-blue border-t-transparent rounded-full animate-spin"></div>
+              <span className="font-sf text-sm font-medium">Loading...</span>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-apple-gray-50 dark:bg-black">
@@ -89,18 +116,16 @@ export default function Home() {
         {/* Main Content */}
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col items-center mb-8">
-            <PrayerTimesDial prayerTimes={prayerTimes} />
+            {prayerTimes && <PrayerTimesDial prayerTimes={prayerTimes} />}
           </div>
           
           <div className="max-w-md mx-auto">
-            <PrayerTimesList 
+            {prayerTimes && <PrayerTimesList 
               prayerTimes={prayerTimes} 
               location={getLocationDisplay()}
-            />
+            />}
           </div>
         </div>
-
-
       </main>
     </div>
   );

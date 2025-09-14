@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PrayerTimes, Location, PrayerSettings } from '@/types/prayer';
 
 interface UsePrayerTimesResult {
@@ -43,7 +43,7 @@ export function usePrayerTimes(location: Location | null, settings: PrayerSettin
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPrayerTimes = async () => {
+  const fetchPrayerTimes = useCallback(async () => {
     if (!location) return;
 
     const cacheKey = getCacheKey(location, settings);
@@ -104,11 +104,11 @@ export function usePrayerTimes(location: Location | null, settings: PrayerSettin
     } finally {
       setLoading(false);
     }
-  };
+  }, [location, settings]); // Include the full settings object in dependencies
 
   useEffect(() => {
     fetchPrayerTimes();
-  }, [location, settings.calculationMethod, settings.adjustments, fetchPrayerTimes]);
+  }, [fetchPrayerTimes]);
 
   return {
     prayerTimes,

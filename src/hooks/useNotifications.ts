@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { PrayerTimes, PrayerSettings } from '@/types/prayer';
 import { timeToMinutes, getCurrentMinutes } from '@/utils/timeUtils';
 
@@ -15,7 +15,7 @@ export function useNotifications(prayerTimes: PrayerTimes | null, settings: Pray
     return Notification.permission === 'granted';
   };
 
-  const showNotification = (prayerName: string, isReminder: boolean = false) => {
+  const showNotification = useCallback((prayerName: string, isReminder: boolean = false) => {
     if (!settings.notificationsEnabled || Notification.permission !== 'granted') return;
 
     const title = isReminder 
@@ -32,9 +32,9 @@ export function useNotifications(prayerTimes: PrayerTimes | null, settings: Pray
       tag: `prayer-${prayerName.toLowerCase()}`,
       requireInteraction: false,
     });
-  };
+  }, [settings.notificationsEnabled, settings.reminderMinutes]);
 
-  const scheduleNotifications = () => {
+  const scheduleNotifications = useCallback(() => {
     if (!prayerTimes || !settings.notificationsEnabled) return;
 
     // Clear existing timeouts
@@ -72,7 +72,7 @@ export function useNotifications(prayerTimes: PrayerTimes | null, settings: Pray
         timeoutsRef.current.push(prayerTimeout);
       }
     });
-  };
+  }, [prayerTimes, settings.notificationsEnabled, settings.reminderMinutes, showNotification]);
 
   useEffect(() => {
     if (settings.notificationsEnabled) {
@@ -84,7 +84,7 @@ export function useNotifications(prayerTimes: PrayerTimes | null, settings: Pray
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
     };
-  }, [prayerTimes, settings.notificationsEnabled, settings.reminderMinutes, scheduleNotifications]);
+  }, [settings.notificationsEnabled, settings.reminderMinutes, scheduleNotifications]);
 
   return {
     requestNotificationPermission,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { PrayerSettings } from '@/types/prayer';
 
 interface SettingsContextType {
@@ -47,14 +47,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('prayer-app-settings', JSON.stringify(settings));
   }, [settings]);
 
-  const updateSettings = (newSettings: Partial<PrayerSettings>) => {
+  const updateSettings = useCallback((newSettings: Partial<PrayerSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
-  };
+  }, []);
 
-  const resetSettings = () => {
+  const resetSettings = useCallback(() => {
     setSettings(defaultSettings);
     localStorage.removeItem('prayer-app-settings');
-  };
+  }, []);
 
   return (
     <SettingsContext.Provider value={{ settings, updateSettings, resetSettings }}>

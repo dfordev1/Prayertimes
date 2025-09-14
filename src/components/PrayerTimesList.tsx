@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { formatTime } from '@/utils/timeUtils';
 
@@ -28,7 +28,7 @@ function getCurrentMinutes(): number {
   return now.getHours() * 60 + now.getMinutes();
 }
 
-export default function PrayerTimesList({ prayerTimes, location }: PrayerTimesListProps) {
+function PrayerTimesList({ prayerTimes, location }: PrayerTimesListProps) {
   const { settings } = useSettings();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [nextPrayer, setNextPrayer] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export default function PrayerTimesList({ prayerTimes, location }: PrayerTimesLi
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 60000); // Update every minute instead of every second
 
     return () => clearInterval(timer);
   }, []);
@@ -141,3 +141,6 @@ export default function PrayerTimesList({ prayerTimes, location }: PrayerTimesLi
     </div>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default memo(PrayerTimesList);

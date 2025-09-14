@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 interface PrayerTimes {
   fajr: string;
@@ -51,13 +51,13 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
   };
 }
 
-export default function PrayerTimesDial({ prayerTimes }: PrayerTimesDialProps) {
+function PrayerTimesDial({ prayerTimes }: PrayerTimesDialProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 60000); // Update every minute instead of every second to reduce re-renders
 
     return () => clearInterval(timer);
   }, []);
@@ -210,8 +210,6 @@ export default function PrayerTimesDial({ prayerTimes }: PrayerTimesDialProps) {
           );
         })}
         
-
-        
         {/* Minimal hour markers - only major hours */}
         {[0, 6, 12, 18].map((hour) => {
           const angle = hour * 15;
@@ -279,12 +277,15 @@ export default function PrayerTimesDial({ prayerTimes }: PrayerTimesDialProps) {
         />
       </svg>
 
-      {/* Glassmorphic current time display */}
+      {/* Glassmorphic current time display - only update every minute */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 glass-effect dark:glass-effect-dark px-5 py-2.5 rounded-full shadow-apple border border-white/40 dark:border-white/20 backdrop-blur-apple">
         <span className="text-sm font-sf font-semibold text-apple-gray-900 dark:text-white tracking-wide">
-          {currentTime.toLocaleTimeString('en-US', { hour12: false })}
+          {currentTime.toLocaleTimeString('en-US', { hour12: false }).slice(0, 5)}
         </span>
       </div>
     </div>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default memo(PrayerTimesDial);

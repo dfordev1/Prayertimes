@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Location {
   latitude: number;
@@ -22,7 +22,7 @@ export function useLocation(): UseLocationResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getLocationName = async (lat: number, lng: number): Promise<{ city?: string; country?: string }> => {
+  const getLocationName = useCallback(async (lat: number, lng: number): Promise<{ city?: string; country?: string }> => {
     try {
       // Use a simple reverse geocoding service
       const response = await fetch(
@@ -41,9 +41,9 @@ export function useLocation(): UseLocationResult {
     }
     
     return {};
-  };
+  }, []);
 
-  const requestLocation = () => {
+  const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by this browser');
       return;
@@ -95,14 +95,9 @@ export function useLocation(): UseLocationResult {
         maximumAge: 300000, // 5 minutes
       }
     );
-  };
+  }, [getLocationName]);
 
-  // Auto-request location on mount
-  useEffect(() => {
-    requestLocation();
-  }, [requestLocation]);
-
-  const setManualLocation = async (lat: number, lng: number) => {
+  const setManualLocation = useCallback(async (lat: number, lng: number) => {
     setLoading(true);
     setError(null);
     
@@ -118,7 +113,15 @@ export function useLocation(): UseLocationResult {
     }
     
     setLoading(false);
-  };
+  }, [getLocationName]);
+
+  // Auto-request location on mount (only once)
+  useEffect(() => {
+    // Check if we already have location in state to prevent re-fetching
+    if (!location) {
+      requestLocation();
+    }
+  }, [location, requestLocation]);
 
   return {
     location,
